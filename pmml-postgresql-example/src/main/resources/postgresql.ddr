@@ -1,0 +1,29 @@
+SQLActions[] = {
+	"BEGIN INSTALL
+		CREATE TYPE iris_request AS (
+			"Sepal.Length" real,
+			"Sepal.Width" real,
+			"Petal.Length" real,
+			"Petal.Width" real
+		);
+		CREATE TYPE iris_response AS (
+			"Species" varchar,
+			"Predicted_Species" varchar,
+			"Probability_setosa" real,
+			"Probability_versicolor" real,
+			"Probability_virginica" real
+		);
+		CREATE FUNCTION iris_species(iris_request) RETURNS varchar
+			AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
+			LANGUAGE java;
+		CREATE FUNCTION iris(iris_request) RETURNS iris_response
+			AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
+			LANGUAGE java;
+	END INSTALL",
+	"BEGIN REMOVE
+		DROP FUNCTION iris(iris_request);
+		DROP FUNCTION iris_species(iris_request);
+		DROP TYPE iris_response;
+		DROP TYPE iris_request;
+	END REMOVE"
+}
