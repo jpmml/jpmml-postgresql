@@ -1,4 +1,4 @@
-JPMML-PostgreSQL
+JPMML-PostgreSQL [![Build Status](https://travis-ci.org/jpmml/jpmml-postgresql.png?branch=master)](https://travis-ci.org/jpmml/jpmml-postgresql)
 ================
 
 PMML evaluator library for the [PostgreSQL database] (http://www.postgresql.org/).
