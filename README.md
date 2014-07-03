@@ -42,6 +42,7 @@ SELECT sqlj.install_jar('file:///tmp/pmml-postgresql-runtime-1.0-SNAPSHOT.jar', 
 ```
 
 The PL/Java function `sqlj.install_jar` takes three arguments:
+
 1. The URL of the JAR file.
 2. A symbolic name after which this JAR file is later known for.
 3. A flag indicating if this JAR file contains an executable SQL deployment descriptor ("BEGIN INSTALL ...").
@@ -59,6 +60,7 @@ SELECT sqlj.remove_jar('jpmml', false);
 ```
 
 The PL/Java function `sqlj.remove_jar` takes two arguments:
+
 1. The symbolic name of the JAR file.
 2. A flag indicating if this JAR file contains an executable SQL deployment descriptor ("BEGIN REMOVE ...").
 
