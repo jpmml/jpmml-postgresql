@@ -56,15 +56,15 @@ public class PMMLUtil {
 			return null;
 		}
 
-		Evaluator evaluator = PMMLUtil.evaluatorCache.get(clazz);
+		Evaluator evaluator = getEvaluator(clazz);
 
 		Map<FieldName, ?> arguments = loadArguments(evaluator, request);
 
 		Map<FieldName, ?> result = evaluator.evaluate(arguments);
 
-		FieldName field = evaluator.getTargetField();
+		Object targetValue = result.get(evaluator.getTargetField());
 
-		return EvaluatorUtil.decode(result.get(field));
+		return EvaluatorUtil.decode(targetValue);
 	}
 
 	static
@@ -74,7 +74,7 @@ public class PMMLUtil {
 			return false;
 		}
 
-		Evaluator evaluator = PMMLUtil.evaluatorCache.get(clazz);
+		Evaluator evaluator = getEvaluator(clazz);
 
 		Map<FieldName, ?> arguments = loadArguments(evaluator, request);
 
@@ -156,6 +156,18 @@ public class PMMLUtil {
 	}
 
 	static
+	private Evaluator getEvaluator(Class<?> clazz) throws Exception {
+		return PMMLUtil.evaluatorCache.get(clazz);
+	}
+
+	static
+	private PMML loadPMML(InputStream is) throws Exception {
+		Source source = ImportFilter.apply(new InputSource(is));
+
+		return JAXBUtil.unmarshalPMML(source);
+	}
+
+	static
 	private ModelEvaluator<?> loadEvaluator(Class<?> clazz) throws Exception {
 		String path = clazz.getSimpleName() + ".pmml";
 
@@ -167,9 +179,7 @@ public class PMMLUtil {
 		PMML pmml;
 
 		try {
-			Source source = ImportFilter.apply(new InputSource(is));
-
-			pmml = JAXBUtil.unmarshalPMML(source);
+			pmml = loadPMML(is);
 		} finally {
 			is.close();
 		}
