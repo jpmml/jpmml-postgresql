@@ -1,10 +1,10 @@
 SQLActions[] = {
 	"BEGIN INSTALL
 		CREATE TYPE iris_request AS (
-			"Sepal.Length" real,
-			"Sepal.Width" real,
-			"Petal.Length" real,
-			"Petal.Width" real
+			"Sepal_Length" real,
+			"Sepal_Width" real,
+			"Petal_Length" real,
+			"Petal_Width" real
 		);
 		CREATE TYPE iris_response AS (
 			"Species" varchar,

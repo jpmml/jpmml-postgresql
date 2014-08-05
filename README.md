@@ -78,10 +78,10 @@ SELECT sqlj.install_jar('file:///tmp/pmml-postgresql-example-1.0-SNAPSHOT.jar', 
 Behind the scenes, the SQL deployment descriptor orders the creation of two composite types and two functions as follows:
 ```sql
 CREATE TYPE iris_request AS (
-	"Sepal.Length" real,
-	"Sepal.Width" real,
-	"Petal.Length" real,
-	"Petal.Width" real
+	"Sepal_Length" real,
+	"Sepal_Width" real,
+	"Petal_Length" real,
+	"Petal_Width" real
 );
 CREATE TYPE iris_response AS (
 	"Species" varchar,
