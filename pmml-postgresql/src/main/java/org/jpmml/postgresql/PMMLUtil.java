@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.transform.Source;
@@ -50,7 +51,7 @@ public class PMMLUtil {
 	}
 
 	static
-	public Object evaluate(Class<?> clazz, ResultSet request) throws Exception {
+	public Object evaluate(Class<?> clazz, Object request) throws Exception {
 
 		if(request == null){
 			return null;
@@ -68,7 +69,7 @@ public class PMMLUtil {
 	}
 
 	static
-	public boolean evaluate(Class<?> clazz, ResultSet request, ResultSet response) throws Exception {
+	public boolean evaluate(Class<?> clazz, Object request, ResultSet response) throws Exception {
 
 		if(request == null){
 			return false;
@@ -86,7 +87,17 @@ public class PMMLUtil {
 	}
 
 	static
-	private Map<FieldName, FieldValue> loadArguments(Evaluator evaluator, ResultSet request) throws SQLException {
+	private Map<FieldName, FieldValue> loadArguments(Evaluator evaluator, Object request) throws Exception {
+
+		if(request instanceof ResultSet){
+			return loadStruct(evaluator, (ResultSet)request);
+		}
+
+		return loadScalarList(evaluator, (List<?>)request);
+	}
+
+	static
+	private Map<FieldName, FieldValue> loadStruct(Evaluator evaluator, ResultSet request) throws SQLException {
 		Map<FieldName, FieldValue> result = Maps.newLinkedHashMap();
 
 		Map<String, Integer> columns = parseColumns(request);
@@ -103,6 +114,28 @@ public class PMMLUtil {
 			FieldValue value = EvaluatorUtil.prepare(evaluator, field, request.getObject(column));
 
 			result.put(field, value);
+		}
+
+		return result;
+	}
+
+	static
+	private Map<FieldName, FieldValue> loadScalarList(Evaluator evaluator, List<?> request){
+		Map<FieldName, FieldValue> result = Maps.newLinkedHashMap();
+
+		List<FieldName> fields = evaluator.getActiveFields();
+		if(fields.size() != request.size()){
+			throw new IllegalArgumentException("Invalid number of arguments");
+		}
+
+		int i = 0;
+
+		for(FieldName field : fields){
+			FieldValue value = EvaluatorUtil.prepare(evaluator, field, request.get(i));
+
+			result.put(field, value);
+
+			i++;
 		}
 
 		return result;

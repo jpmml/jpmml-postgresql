@@ -78,22 +78,28 @@ SELECT sqlj.install_jar('file:///tmp/pmml-postgresql-example-1.0-SNAPSHOT.jar', 
 Behind the scenes, the SQL deployment descriptor orders the creation of two composite types and two functions as follows:
 ```sql
 CREATE TYPE iris_request AS (
-	"Sepal_Length" real,
-	"Sepal_Width" real,
-	"Petal_Length" real,
-	"Petal_Width" real
+	"Sepal_Length" double precision,
+	"Sepal_Width" double precision,
+	"Petal_Length" double precision,
+	"Petal_Width" double precision
 );
 CREATE TYPE iris_response AS (
 	"Species" varchar,
 	"Predicted_Species" varchar,
-	"Probability_setosa" real,
-	"Probability_versicolor" real,
-	"Probability_virginica" real
+	"Probability_setosa" double precision,
+	"Probability_versicolor" double precision,
+	"Probability_virginica" double precision
 );
 CREATE FUNCTION iris_species(iris_request) RETURNS varchar
 	AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
 	LANGUAGE java;
+CREATE FUNCTION iris_species("Sepal_Length" double precision, "Sepal_Width" double precision, "Petal_Length" double precision, "Petal_Width" double precision) RETURNS varchar
+	AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
+	LANGUAGE java;
 CREATE FUNCTION iris(iris_request) RETURNS iris_response
+	AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
+	LANGUAGE java;
+CREATE FUNCTION iris("Sepal_Length" double precision, "Sepal_Width" double precision, "Petal_Length" double precision, "Petal_Width" double precision) RETURNS iris_response
 	AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
 	LANGUAGE java;
 ```
@@ -103,11 +109,11 @@ Add the example model JAR file to the classpath of the target schema. The classp
 SELECT sqlj.set_classpath('public', 'jpmml:DecisionTreeIris');
 ```
 
-##### Evaluation
+##### Usage
 
 Predicting the iris species:
 ```sql
-SELECT iris_species(ROW(7, 3.2, 4.7, 1.4));
+SELECT iris_species(7, 3.2, 4.7, 1.4);
 ```
 
 Result:
@@ -119,7 +125,7 @@ Result:
 
 Predicting the iris species together with the calculated probabilities for each target category:
 ```sql
-SELECT (iris(ROW(7, 3.2, 4.7, 1.4))).*;
+SELECT (iris(7, 3.2, 4.7, 1.4)).*;
 ```
 
 Result:
@@ -138,7 +144,9 @@ SELECT sqlj.remove_jar('DecisionTreeIris', true);
 
 Behind the scenes, the SQL deployment descriptor orders the deletion of two composite types and two functions as follows:
 ```sql
+DROP FUNCTION iris(double precision, double precision, double precision, double precision);
 DROP FUNCTION iris(iris_request);
+DROP FUNCTION iris_species(double precision, double precision, double precision, double precision);
 DROP FUNCTION iris_species(iris_request);
 DROP TYPE iris_response;
 DROP TYPE iris_request;

@@ -19,6 +19,7 @@
 package org.jpmml.postgresql;
 
 import java.sql.ResultSet;
+import java.util.Arrays;
 
 public class DecisionTreeIris {
 
@@ -28,7 +29,17 @@ public class DecisionTreeIris {
 	}
 
 	static
+	public String evaluate(double sepalLength, double sepalWidth, double petalLength, double petalWidth) throws Exception {
+		return (String)PMMLUtil.evaluate(DecisionTreeIris.class, Arrays.asList(sepalLength, sepalWidth, petalLength, petalWidth));
+	}
+
+	static
 	public boolean evaluate(ResultSet request, ResultSet response) throws Exception {
 		return PMMLUtil.evaluate(DecisionTreeIris.class, request, response);
+	}
+
+	static
+	public boolean evaluate(double sepalLength, double sepalWidth, double petalLength, double petalWidth, ResultSet response) throws Exception {
+		return PMMLUtil.evaluate(DecisionTreeIris.class, Arrays.asList(sepalLength, sepalWidth, petalLength, petalWidth), response);
 	}
 }

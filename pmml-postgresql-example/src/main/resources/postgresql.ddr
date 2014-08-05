@@ -1,27 +1,35 @@
 SQLActions[] = {
 	"BEGIN INSTALL
 		CREATE TYPE iris_request AS (
-			"Sepal_Length" real,
-			"Sepal_Width" real,
-			"Petal_Length" real,
-			"Petal_Width" real
+			"Sepal_Length" double precision,
+			"Sepal_Width" double precision,
+			"Petal_Length" double precision,
+			"Petal_Width" double precision
 		);
 		CREATE TYPE iris_response AS (
 			"Species" varchar,
 			"Predicted_Species" varchar,
-			"Probability_setosa" real,
-			"Probability_versicolor" real,
-			"Probability_virginica" real
+			"Probability_setosa" double precision,
+			"Probability_versicolor" double precision,
+			"Probability_virginica" double precision
 		);
 		CREATE FUNCTION iris_species(iris_request) RETURNS varchar
+			AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
+			LANGUAGE java;
+		CREATE FUNCTION iris_species("Sepal_Length" double precision, "Sepal_Width" double precision, "Petal_Length" double precision, "Petal_Width" double precision) RETURNS varchar
 			AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
 			LANGUAGE java;
 		CREATE FUNCTION iris(iris_request) RETURNS iris_response
 			AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
 			LANGUAGE java;
+		CREATE FUNCTION iris("Sepal_Length" double precision, "Sepal_Width" double precision, "Petal_Length" double precision, "Petal_Width" double precision) RETURNS iris_response
+			AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
+			LANGUAGE java;
 	END INSTALL",
 	"BEGIN REMOVE
+		DROP FUNCTION iris(double precision, double precision, double precision, double precision);
 		DROP FUNCTION iris(iris_request);
+		DROP FUNCTION iris_species(double precision, double precision, double precision, double precision);
 		DROP FUNCTION iris_species(iris_request);
 		DROP TYPE iris_response;
 		DROP TYPE iris_request;
