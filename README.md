@@ -17,7 +17,7 @@ A working JPMML-PostgreSQL setup consists of a library JAR file and a number of 
 
 The main responsibility of a model launcher class is to formalize the "public interface" of a PMML resource. Every PL/Java function must be backed by a public static method that takes a PostgreSQL tuple as an argument, and returns either a PostgreSQL scalar or a PostgreSQL tuple as a result.
 
-The example model JAR file contains a DecisionTree model for the "iris" dataset. The model launcher class `org.jpmml.postgresql.DecisionTreeIris` defines two functions. The first method `#evaluate(java.sql.ResultSet)` defines a function that returns the PMML target field ("Species") as a PostgreSQL character type. The second method `#evaluate(java.sql.ResultSet, java.sql.ResultSet)` defines a function that returns the PMML target field ("Species") together with four output fields ("Predicted_Species", "Probability_setosa", "Probability_versicolor", "Probability_virginica") as a PostgreSQL tuple. The installation and removal of functions is completely automated using an SQL deployment descriptor mechanism.
+The example model JAR file contains a DecisionTree model for the "iris" dataset. This model is exposed in two ways. First, the model launcher class `org.jpmml.postgresql.DecisionTreeIris` defines two functions that return the PMML target field ("Species") together with four output fields ("Predicted_Species", "Probability_setosa", "Probability_versicolor", "Probability_virginica") as a PostgreSQL tuple. Second, the model launcher class `org.jpmml.postgresql.DecisionTreeIris_Species` defines two functions that return the PMML target field ("Species") as a PostgreSQL character type. The installation and removal of functions is completely automated using an SQL deployment descriptor mechanism.
 
 # Installation #
 
@@ -90,17 +90,17 @@ CREATE TYPE iris_response AS (
 	"Probability_versicolor" double precision,
 	"Probability_virginica" double precision
 );
-CREATE FUNCTION iris_species(iris_request) RETURNS varchar
+CREATE FUNCTION DecisionTreeIris(iris_request) RETURNS iris_response
 	AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
 	LANGUAGE java;
-CREATE FUNCTION iris_species("Sepal_Length" double precision, "Sepal_Width" double precision, "Petal_Length" double precision, "Petal_Width" double precision) RETURNS varchar
+CREATE FUNCTION DecisionTreeIris("Sepal_Length" double precision, "Sepal_Width" double precision, "Petal_Length" double precision, "Petal_Width" double precision) RETURNS iris_response
 	AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
 	LANGUAGE java;
-CREATE FUNCTION iris(iris_request) RETURNS iris_response
-	AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
+CREATE FUNCTION DecisionTreeIris_Species(iris_request) RETURNS varchar
+	AS 'org.jpmml.postgresql.DecisionTreeIris_Species.evaluate'
 	LANGUAGE java;
-CREATE FUNCTION iris("Sepal_Length" double precision, "Sepal_Width" double precision, "Petal_Length" double precision, "Petal_Width" double precision) RETURNS iris_response
-	AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
+CREATE FUNCTION DecisionTreeIris_Species("Sepal_Length" double precision, "Sepal_Width" double precision, "Petal_Length" double precision, "Petal_Width" double precision) RETURNS varchar
+	AS 'org.jpmml.postgresql.DecisionTreeIris_Species.evaluate'
 	LANGUAGE java;
 ```
 
@@ -111,21 +111,9 @@ SELECT sqlj.set_classpath('public', 'jpmml:DecisionTreeIris');
 
 ##### Usage
 
-Predicting the iris species:
-```sql
-SELECT iris_species(7, 3.2, 4.7, 1.4);
-```
-
-Result:
-```
- iris_species 
---------------
- versicolor
-```
-
 Predicting the iris species together with the calculated probabilities for each target category:
 ```sql
-SELECT (iris(7, 3.2, 4.7, 1.4)).*;
+SELECT (DecisionTreeIris(7, 3.2, 4.7, 1.4)).*;
 ```
 
 Result:
@@ -133,6 +121,18 @@ Result:
   Species   | Predicted_Species | Probability_setosa | Probability_versicolor | Probability_virginica 
 ------------+-------------------+--------------------+------------------------+-----------------------
  versicolor | versicolor        |                  0 |               0.907407 |             0.0925926
+```
+
+Predicting the iris species:
+```sql
+SELECT DecisionTreeIris_Species(7, 3.2, 4.7, 1.4);
+```
+
+Result:
+```
+ decisiontreeiris_species 
+-------------------------
+ versicolor
 ```
 
 ##### Removal
@@ -144,10 +144,10 @@ SELECT sqlj.remove_jar('DecisionTreeIris', true);
 
 Behind the scenes, the SQL deployment descriptor orders the deletion of two composite types and two functions as follows:
 ```sql
-DROP FUNCTION iris(double precision, double precision, double precision, double precision);
-DROP FUNCTION iris(iris_request);
-DROP FUNCTION iris_species(double precision, double precision, double precision, double precision);
-DROP FUNCTION iris_species(iris_request);
+DROP FUNCTION DecisionTreeIris_Species(double precision, double precision, double precision, double precision);
+DROP FUNCTION DecisionTreeIris_Species(iris_request);
+DROP FUNCTION DecisionTreeIris(double precision, double precision, double precision, double precision);
+DROP FUNCTION DecisionTreeIris(iris_request);
 DROP TYPE iris_response;
 DROP TYPE iris_request;
 ```

@@ -21,15 +21,15 @@ package org.jpmml.postgresql;
 import java.sql.ResultSet;
 import java.util.Arrays;
 
-public class DecisionTreeIris {
+public class DecisionTreeIris_Species {
 
 	static
-	public boolean evaluate(ResultSet request, ResultSet response) throws Exception {
-		return PMMLUtil.evaluateComplex(DecisionTreeIris.class, request, response);
+	public String evaluate(ResultSet request) throws Exception {
+		return (String)PMMLUtil.evaluateSimple(DecisionTreeIris.class, request);
 	}
 
 	static
-	public boolean evaluate(double sepalLength, double sepalWidth, double petalLength, double petalWidth, ResultSet response) throws Exception {
-		return PMMLUtil.evaluateComplex(DecisionTreeIris.class, Arrays.asList(sepalLength, sepalWidth, petalLength, petalWidth), response);
+	public String evaluate(double sepalLength, double sepalWidth, double petalLength, double petalWidth) throws Exception {
+		return (String)PMMLUtil.evaluateSimple(DecisionTreeIris.class, Arrays.asList(sepalLength, sepalWidth, petalLength, petalWidth));
 	}
 }

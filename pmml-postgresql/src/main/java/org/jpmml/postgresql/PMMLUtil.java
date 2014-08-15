@@ -39,7 +39,7 @@ public class PMMLUtil {
 	}
 
 	static
-	public Object evaluate(Class<?> clazz, Object request) throws Exception {
+	public Object evaluateSimple(Class<?> clazz, Object request) throws Exception {
 
 		if(request == null){
 			return null;
@@ -57,7 +57,7 @@ public class PMMLUtil {
 	}
 
 	static
-	public boolean evaluate(Class<?> clazz, Object request, ResultSet response) throws Exception {
+	public boolean evaluateComplex(Class<?> clazz, Object request, ResultSet response) throws Exception {
 
 		if(request == null){
 			return false;

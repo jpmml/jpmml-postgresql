@@ -13,24 +13,24 @@ SQLActions[] = {
 			"Probability_versicolor" double precision,
 			"Probability_virginica" double precision
 		);
-		CREATE FUNCTION iris_species(iris_request) RETURNS varchar
+		CREATE FUNCTION DecisionTreeIris(iris_request) RETURNS iris_response
 			AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
 			LANGUAGE java;
-		CREATE FUNCTION iris_species("Sepal_Length" double precision, "Sepal_Width" double precision, "Petal_Length" double precision, "Petal_Width" double precision) RETURNS varchar
+		CREATE FUNCTION DecisionTreeIris("Sepal_Length" double precision, "Sepal_Width" double precision, "Petal_Length" double precision, "Petal_Width" double precision) RETURNS iris_response
 			AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
 			LANGUAGE java;
-		CREATE FUNCTION iris(iris_request) RETURNS iris_response
-			AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
+		CREATE FUNCTION DecisionTreeIris_Species(iris_request) RETURNS varchar
+			AS 'org.jpmml.postgresql.DecisionTreeIris_Species.evaluate'
 			LANGUAGE java;
-		CREATE FUNCTION iris("Sepal_Length" double precision, "Sepal_Width" double precision, "Petal_Length" double precision, "Petal_Width" double precision) RETURNS iris_response
-			AS 'org.jpmml.postgresql.DecisionTreeIris.evaluate'
+		CREATE FUNCTION DecisionTreeIris_Species("Sepal_Length" double precision, "Sepal_Width" double precision, "Petal_Length" double precision, "Petal_Width" double precision) RETURNS varchar
+			AS 'org.jpmml.postgresql.DecisionTreeIris_Species.evaluate'
 			LANGUAGE java;
 	END INSTALL",
 	"BEGIN REMOVE
-		DROP FUNCTION iris(double precision, double precision, double precision, double precision);
-		DROP FUNCTION iris(iris_request);
-		DROP FUNCTION iris_species(double precision, double precision, double precision, double precision);
-		DROP FUNCTION iris_species(iris_request);
+		DROP FUNCTION DecisionTreeIris_Species(double precision, double precision, double precision, double precision);
+		DROP FUNCTION DecisionTreeIris_Species(iris_request);
+		DROP FUNCTION DecisionTreeIris(double precision, double precision, double precision, double precision);
+		DROP FUNCTION DecisionTreeIris(iris_request);
 		DROP TYPE iris_response;
 		DROP TYPE iris_request;
 	END REMOVE"
