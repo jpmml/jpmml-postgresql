@@ -23,6 +23,9 @@ import java.util.Arrays;
 
 public class DecisionTreeIris_Species {
 
+	private DecisionTreeIris_Species(){
+	}
+
 	static
 	public String evaluate(ResultSet request) throws Exception {
 		return (String)PMMLUtil.evaluateSimple(DecisionTreeIris.class, request);

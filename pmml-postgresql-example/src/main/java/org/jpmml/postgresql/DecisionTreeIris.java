@@ -23,6 +23,9 @@ import java.util.Arrays;
 
 public class DecisionTreeIris {
 
+	private DecisionTreeIris(){
+	}
+
 	static
 	public boolean evaluate(ResultSet request, ResultSet response) throws Exception {
 		return PMMLUtil.evaluateComplex(DecisionTreeIris.class, request, response);
